@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="检索全球天文研究者名录的学术成果与影响力排名，查阅分项得分、代表作品和评分依据。">
+  <title>全球天文研究者排名</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="data.js"></script>
+  <script defer src="topics.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#ranking">跳到排名</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand"><span class="brand-symbol" aria-hidden="true">✦</span>天文学术名录</a>
+      <button id="method-button" class="outline-button" type="button">评分方法</button>
+    </div>
+  </header>
+
+  <main class="container" id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="snapshot" id="snapshot"></p>
+        <h1 id="page-title">全球天文研究者排名</h1>
+        <p class="lede">按长期成果、近期影响、研究产出与公开贡献综合评分。</p>
+      </div>
+      <dl class="stats" aria-label="名录覆盖">
+        <div><dt>名录记录</dt><dd id="total-count">—</dd></div>
+        <div><dt>有计分证据</dt><dd id="scored-count">—</dd></div>
+        <div><dt>零证据分并列</dt><dd id="unscored-count">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="browse" aria-labelledby="browse-title">
+      <div class="browse-head">
+        <h2 id="browse-title">按分类浏览</h2>
+        <div class="browse-switch" role="group" aria-label="选择分类">
+          <button type="button" id="browse-topics" aria-pressed="true">研究方向</button>
+          <button type="button" id="browse-regions" aria-pressed="false">国家或地区</button>
+        </div>
+        <button type="button" id="browse-more" class="clear-button" aria-expanded="false" aria-controls="browse-list">更多分类</button>
+      </div>
+      <div id="browse-list" class="browse-list"></div>
+    </section>
+
+    <section class="ranking" id="ranking" aria-labelledby="ranking-title">
+      <h2 id="ranking-title" class="sr-only">综合排名</h2>
+      <form id="filters" class="filters" role="search">
+        <label class="search-box">
+          <span class="search-icon" aria-hidden="true"></span>
+          <span class="sr-only">搜索姓名或机构</span>
+          <input id="query" type="search" placeholder="搜索中文名、英文名或机构" autocomplete="off">
+        </label>
+        <label class="select-box topic-filter">
+          <span class="sr-only">按研究方向筛选</span>
+          <select id="topic"><option value="">所有研究方向</option></select>
+        </label>
+        <label class="select-box">
+          <span class="sr-only">按国家、地区或 IAU 归属筛选</span>
+          <select id="region"><option value="">所有国家或地区</option></select>
+        </label>
+        <label class="select-box">
+          <span class="sr-only">证据状态</span>
+          <select id="evidence">
+            <option value="">所有证据状态</option>
+            <option value="scored">有计分证据</option>
+            <option value="unscored">零证据分并列</option>
+          </select>
+        </label>
+        <button id="clear" class="clear-button" type="reset">清除筛选</button>
+      </form>
+
+      <div class="table-wrap" id="table-wrap" tabindex="0" aria-label="排名表，可横向滚动">
+        <table aria-label="天文研究者综合排名">
+          <thead>
+            <tr>
+              <th scope="col" class="rank-col" aria-sort="ascending"><button type="button" data-sort="0">名次<span></span></button></th>
+              <th scope="col" class="name-col"><button type="button" data-sort="1">研究者<span></span></button></th>
+              <th scope="col" class="region-col">国家或地区</th>
+              <th scope="col" class="topic-col">主要方向</th>
+              <th scope="col" class="number-col"><button type="button" data-sort="4">长期成果与影响<span></span><small>35 分</small></button></th>
+              <th scope="col" class="number-col"><button type="button" data-sort="5">近期影响<span></span><small>35 分</small></button></th>
+              <th scope="col" class="number-col"><button type="button" data-sort="6">近期产出<span></span><small>15 分</small></button></th>
+              <th scope="col" class="number-col"><button type="button" data-sort="7">奖项与发现<span></span><small>15 分</small></button></th>
+              <th scope="col" class="score-col"><button type="button" data-sort="3">综合分<span></span><small>100 分</small></button></th>
+            </tr>
+          </thead>
+          <tbody id="results"></tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <p id="result-count" role="status" aria-live="polite"></p>
+        <div class="pagination">
+          <label class="select-box page-size">
+            <span class="sr-only">每页记录数</span>
+            <select id="page-size"><option value="25">25 条 / 页</option><option value="50">50 条 / 页</option><option value="100">100 条 / 页</option></select>
+          </label>
+          <button type="button" id="previous" class="outline-button">上一页</button>
+          <form id="jump" class="jump">
+            <label for="page-number" class="sr-only">跳到页码，按回车确认</label>
+            <input id="page-number" type="number" inputmode="numeric" min="1" value="1" required>
+            <span id="page-total"></span>
+          </form>
+          <button type="button" id="next" class="outline-button">下一页</button>
+        </div>
+      </div>
+    </section>
+    <footer class="site-footer">按现有名录公开证据排序。同分并列，零证据分表示缺少可归属的计分记录。</footer>
+    <noscript><p>请启用 JavaScript 查看名录和排名。</p></noscript>
+  </main>
+
+  <dialog id="detail" class="drawer" aria-labelledby="detail-title">
+    <div class="dialog-top">
+      <h2 id="detail-title"></h2>
+      <form method="dialog"><button class="outline-button" type="submit" autofocus>关闭</button></form>
+    </div>
+    <div id="detail-body"></div>
+  </dialog>
+  <dialog id="method" class="method" aria-labelledby="method-title">
+    <div class="dialog-top">
+      <h2 id="method-title">评分方法与证据覆盖</h2>
+      <form method="dialog"><button class="outline-button" type="submit" autofocus>关闭</button></form>
+    </div>
+    <div id="method-body"></div>
+  </dialog>
+</body>
+</html>
